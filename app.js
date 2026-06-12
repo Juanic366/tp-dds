@@ -4,6 +4,8 @@ import express from "express";
 import cors from "cors";
 import authRouter from "./routers/authRouter.js"
 import aulasRouter from "./routers/aulasRouter.js"
+import reservasRouter from "./routers/reservasRouter.js"
+import { initDb } from "./models/syncDb.js";
 
 const app = express();
 
@@ -55,13 +57,14 @@ app.use("/auth", authRouter);
 
 // Recursos
 app.use("/api/aulas", aulasRouter);
-// app.use("/api/reservas", reservasRouter);
+app.use("/api/reservas", reservasRouter);
 
 //404
 app.use((req, res) => {
     res.status(404).json({ error: "Ruta no encontrada" });
 });
 
+await initDb();
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from './db.js';
+import { Reserva } from "./Reserva.js";
 
 export const Aula = sequelize.define('Aula', {
   id: {
@@ -43,61 +44,61 @@ export const Aula = sequelize.define('Aula', {
 
 // ── Funciones del store (misma interfaz que antes) ────────────────────────────
 
-export default Aula;
 
-// export async function findAll() {
-//   const rows = await Aula.findAll({ order: [['id', 'ASC']] });
-//   return rows.map(r => r.toJSON());
-// }
 
-// export async function findById(id) {
-//   const aula = await Aula.findByPk(Number(id));
-//   return aula ? aula.toJSON() : null;
-// }
+export async function findAll() {
+  const rows = await Aula.findAll({ order: [['id', 'ASC']] });
+  return rows.map(r => r.toJSON());
+}
 
-// export async function findByFilters({ nombre, ubicacion, activa, minCapacidad } = {}) {
-//   const todas = await findAll();
-//   return todas.filter(aula => {
-//     if (nombre && !aula.nombre.toLowerCase().includes(nombre.toLowerCase())) return false;
-//     if (ubicacion && !aula.ubicacion.toLowerCase().includes(ubicacion.toLowerCase())) return false;
-//     if (activa !== undefined && aula.activa !== activa) return false;
-//     if (minCapacidad && aula.capacidad < Number(minCapacidad)) return false;
-//     return true;
-//   });
-// }
+export async function findById(id) {
+  const aula = await Aula.findByPk(Number(id));
+  return aula ? aula.toJSON() : null;
+}
 
-// export async function create(data) {
-//   const recursos = Array.isArray(data.recursos)
-//     ? data.recursos
-//     : data.recursos ? String(data.recursos).split(',').map(r => r.trim()) : [];
+export async function findByFilters({ nombre, ubicacion, activa, minCapacidad } = {}) {
+  const todas = await findAll();
+  return todas.filter(aula => {
+    if (nombre && !aula.nombre.toLowerCase().includes(nombre.toLowerCase())) return false;
+    if (ubicacion && !aula.ubicacion.toLowerCase().includes(ubicacion.toLowerCase())) return false;
+    if (activa !== undefined && aula.activa !== activa) return false;
+    if (minCapacidad && aula.capacidad < Number(minCapacidad)) return false;
+    return true;
+  });
+}
 
-//   const nueva = await Aula.create({
-//     nombre: String(data.nombre).trim(),
-//     ubicacion: String(data.ubicacion).trim(),
-//     capacidad: Number(data.capacidad),
-//     recursos,
-//     activa: data.activa !== undefined ? Boolean(data.activa) : true
-//   });
-//   return nueva.toJSON();
-// }
+export async function create(data) {
+  const recursos = Array.isArray(data.recursos)
+    ? data.recursos
+    : data.recursos ? String(data.recursos).split(',').map(r => r.trim()) : [];
 
-// export async function update(id, data) {
-//   const aula = await Aula.findByPk(Number(id));
-//   if (!aula) return null;
+  const nueva = await Aula.create({
+    nombre: String(data.nombre).trim(),
+    ubicacion: String(data.ubicacion).trim(),
+    capacidad: Number(data.capacidad),
+    recursos,
+    activa: data.activa !== undefined ? Boolean(data.activa) : true
+  });
+  return nueva.toJSON();
+}
 
-//   if (data.nombre    !== undefined) aula.nombre    = String(data.nombre).trim();
-//   if (data.ubicacion !== undefined) aula.ubicacion = String(data.ubicacion).trim();
-//   if (data.capacidad !== undefined) aula.capacidad = Number(data.capacidad);
-//   if (data.recursos  !== undefined) {
-//     aula.recursos = Array.isArray(data.recursos)
-//       ? data.recursos
-//       : data.recursos ? String(data.recursos).split(',').map(r => r.trim()) : [];
-//   }
-//   if (data.activa !== undefined) aula.activa = Boolean(data.activa);
+export async function update(id, data) {
+  const aula = await Aula.findByPk(Number(id));
+  if (!aula) return null;
 
-//   await aula.save();
-//   return aula.toJSON();
-// }
+  if (data.nombre    !== undefined) aula.nombre    = String(data.nombre).trim();
+  if (data.ubicacion !== undefined) aula.ubicacion = String(data.ubicacion).trim();
+  if (data.capacidad !== undefined) aula.capacidad = Number(data.capacidad);
+  if (data.recursos  !== undefined) {
+    aula.recursos = Array.isArray(data.recursos)
+      ? data.recursos
+      : data.recursos ? String(data.recursos).split(',').map(r => r.trim()) : [];
+  }
+  if (data.activa !== undefined) aula.activa = Boolean(data.activa);
+
+  await aula.save();
+  return aula.toJSON();
+}
 
 // export async function setActiva(id, valor) {
 //   const aula = await Aula.findByPk(Number(id));
@@ -107,12 +108,18 @@ export default Aula;
 //   return aula.toJSON();
 // }
 
-// export async function existeNombre(nombre, idExcluir = null) {
-//   if (!nombre) return false;
-//   const n = String(nombre).trim().toLowerCase();
-//   const todas = await findAll();
-//   return todas.some(aula =>
-//     aula.nombre.toLowerCase() === n &&
-//     aula.id !== Number(idExcluir)
-//   );
-// }
+export async function existeNombre(nombre, idExcluir = null) {
+  if (!nombre) return false;
+  const n = String(nombre).trim().toLowerCase();
+  const todas = await findAll();
+  return todas.some(aula =>
+    aula.nombre.toLowerCase() === n &&
+    aula.id !== Number(idExcluir)
+  );
+}
+
+Aula.hasMany(Reserva, {
+    foreignKey: "aulaId"
+});
+
+export default Aula;

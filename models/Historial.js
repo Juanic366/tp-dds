@@ -12,7 +12,7 @@ export const Historial = sequelize.define('Historial', {
     allowNull: false
   },
   usuarioId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false
   },
   accion: {
@@ -74,7 +74,7 @@ export async function findByReservaId(reservaId) {
 export async function create({ reservaId, usuarioId, accion, valorAnterior = null, valorNuevo = null }) {
   const registro = await Historial.create({
     reservaId:     Number(reservaId),
-    usuarioId:     Number(usuarioId),
+    usuarioId:     String(usuarioId),
     accion,
     fechaHora:     new Date(),
     valorAnterior,

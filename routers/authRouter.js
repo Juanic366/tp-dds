@@ -66,4 +66,15 @@ router.get("/api/admin", tokenExtractor, requiereRol("admin"), (req, res) => {
     });
 });
 
+router.get(
+  "/debug",
+  tokenExtractor,
+  (req, res) => {
+    console.log(req.user);
+
+    res.json(req.user);
+  }
+);
+
+
 export default router;

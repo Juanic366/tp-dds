@@ -41,7 +41,7 @@ router.get("/:id", async (req, res, next) => {
 router.post(
   "/",
   tokenExtractor,
-  requiereRol("ADMIN"),
+  requiereRol("admin"),
   async (req, res, next) => {
     try {
       const aula = await aulaService.crear(req.body);
@@ -58,7 +58,7 @@ router.post(
 router.put(
   "/:id",
   tokenExtractor,
-  requiereRol("ADMIN"),
+  requiereRol("admin"),
   async (req, res, next) => {
     try {
       const aula = await aulaService.actualizar(
@@ -78,7 +78,7 @@ router.put(
 router.delete(
   "/:id",
   tokenExtractor,
-  requiereRol("ADMIN"),
+  requiereRol("admin"),
   async (req, res, next) => {
     try {
       await aulaService.eliminar(req.params.id);

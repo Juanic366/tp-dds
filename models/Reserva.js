@@ -1,5 +1,6 @@
 import { DataTypes, Op } from 'sequelize';
 import { sequelize } from './db.js';
+import Aula from "./Aula.js";
 
 export const Reserva = sequelize.define('Reserva', {
   id: {
@@ -12,7 +13,7 @@ export const Reserva = sequelize.define('Reserva', {
     allowNull: false
   },
   usuarioId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false
   },
   fecha: {
@@ -66,7 +67,7 @@ export async function findById(id) {
 export async function findByFilters({ aulaId, usuarioId, fecha, estado } = {}) {
   const where = {};
   if (aulaId    !== undefined) where.aulaId    = Number(aulaId);
-  if (usuarioId !== undefined) where.usuarioId = Number(usuarioId);
+  if (usuarioId !== undefined) where.usuarioId = String(usuarioId);
   if (fecha)                   where.fecha     = String(fecha);
   if (estado)                  where.estado    = String(estado).toLowerCase();
 
@@ -77,7 +78,7 @@ export async function findByFilters({ aulaId, usuarioId, fecha, estado } = {}) {
 export async function create(data) {
   const nueva = await Reserva.create({
     aulaId: Number(data.aulaId),
-    usuarioId: Number(data.usuarioId),
+    usuarioId: String(data.usuarioId),
     fecha: String(data.fecha),
     horaInicio: String(data.horaInicio),
     horaFin: String(data.horaFin),
@@ -103,6 +104,16 @@ export async function update(id, data) {
 
   await reserva.save();
   return reserva.toJSON();
+}
+
+export async function remove(id) {
+    const reserva = await Reserva.findByPk(Number(id));
+
+    if (!reserva) return false;
+
+    await reserva.destroy();
+
+    return true;
 }
 
 export async function existeReservaEnHorario({ aulaId, fecha, horaInicio, horaFin }, idExcluir = null) {
